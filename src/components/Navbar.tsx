@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Brain, Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getStoredUser } from "@/lib/auth";
 
@@ -16,10 +16,26 @@ const navItems = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [isLightTheme, setIsLightTheme] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const user = getStoredUser();
   const visibleNavItems = user ? navItems : navItems.filter((item) => item.path === "/");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("aiml_theme");
+    const shouldUseLight = savedTheme === "light";
+    document.documentElement.classList.toggle("light", shouldUseLight);
+    setIsLightTheme(shouldUseLight);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextIsLight = !isLightTheme;
+    setIsLightTheme(nextIsLight);
+    document.documentElement.classList.toggle("light", nextIsLight);
+    localStorage.setItem("aiml_theme", nextIsLight ? "light" : "dark");
+  };
+
   const handleSignOut = () => {
     localStorage.removeItem("aiml_user");
     navigate("/", { replace: true });
@@ -29,7 +45,7 @@ const Navbar = () => {
     <nav className="sticky top-0 left-0 right-0 z-50 glass-strong border-b border-white/10">
       <div className="container mx-auto flex items-center justify-between h-16 md:h-[72px] px-4">
         <Link to="/" className="flex items-center gap-2 group">
-          <Brain className="w-7 h-7 text-primary group-hover:text-accent transition-colors" />
+          <img src="/logo.png" alt="AIML PlayLab logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white/20" />
           <span className="font-display text-lg font-bold text-gradient">AIML PlayLab</span>
         </Link>
 
@@ -51,6 +67,14 @@ const Navbar = () => {
               }`} />
             </Link>
           ))}
+          <button
+            onClick={toggleTheme}
+            className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
+            aria-label="Toggle theme"
+            title="Toggle theme"
+          >
+            {isLightTheme ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
           <Link
             to={user ? "/dashboard" : "/auth"}
             className="ml-2 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
@@ -98,6 +122,13 @@ const Navbar = () => {
                   {item.label}
                 </Link>
               ))}
+              <button
+                onClick={toggleTheme}
+                className="px-4 py-3 rounded-xl text-sm font-medium subtext-color hover:text-foreground hover:bg-white/5 flex items-center gap-2 transition-all duration-300"
+              >
+                {isLightTheme ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                {isLightTheme ? "Switch to Dark" : "Switch to Light"}
+              </button>
               <Link
                 to={user ? "/dashboard" : "/auth"}
                 onClick={() => setOpen(false)}

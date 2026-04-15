@@ -48,6 +48,54 @@
     --sidebar-accent-foreground: 218 27% 91%;
     --sidebar-border: 223 27% 23%;
     --sidebar-ring: 244 100% 69%;
+
+    --heading: 226 32% 90%;
+    --subtext: 217 24% 66%;
+    --glass-bg: 255 255 255;
+    --glass-alpha: 0.05;
+    --glass-strong-alpha: 0.08;
+  }
+
+  .light {
+    --background: 220 40% 96%;
+    --foreground: 222 47% 9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 244 100% 63%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 20% 92%;
+    --muted-foreground: 220 12% 30%;
+
+    --accent: 173 92% 42%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 220 20% 85%;
+    --input: 0 0% 100%;
+    --ring: 244 100% 63%;
+
+    --sidebar-background: 220 35% 95%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 244 100% 63%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 90%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 20% 85%;
+    --sidebar-ring: 244 100% 63%;
+
+    --heading: 222 47% 12%;
+    --subtext: 220 12% 28%;
+    --glass-bg: 255 255 255;
+    --glass-alpha: 0.72;
+    --glass-strong-alpha: 0.84;
   }
 }
 
@@ -58,10 +106,43 @@
   body {
     @apply text-foreground font-body antialiased;
     background:
-      radial-gradient(60rem 60rem at 15% -10%, rgba(108, 99, 255, 0.2), transparent 55%),
-      radial-gradient(55rem 55rem at 85% 0%, rgba(0, 245, 212, 0.14), transparent 52%),
-      linear-gradient(135deg, #0b0f1a 0%, #0f172a 48%, #020617 100%);
+      radial-gradient(68rem 48rem at 22% 32%, rgba(56, 189, 248, 0.17), transparent 62%),
+      radial-gradient(62rem 44rem at 52% 46%, rgba(20, 184, 166, 0.12), transparent 65%),
+      linear-gradient(110deg, #0a1b33 0%, #0f2a44 34%, #091526 58%, #040a14 78%, #020617 100%);
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(circle at center, black 35%, transparent 100%);
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    pointer-events: none;
+    z-index: -1;
+    background:
+      radial-gradient(28rem 24rem at 18% 30%, rgba(45, 212, 191, 0.22), transparent 75%),
+      radial-gradient(30rem 26rem at 52% 52%, rgba(59, 130, 246, 0.16), transparent 72%),
+      radial-gradient(24rem 22rem at 86% 65%, rgba(15, 23, 42, 0.65), transparent 75%);
+    filter: blur(26px);
+    opacity: 0.9;
+  }
+  .light body {
+    background:
+      radial-gradient(56rem 56rem at 14% -8%, rgba(108, 99, 255, 0.12), transparent 56%),
+      radial-gradient(52rem 52rem at 85% 2%, rgba(0, 245, 212, 0.1), transparent 54%),
+      linear-gradient(135deg, #eef2ff 0%, #e2e8f0 48%, #f8fafc 100%);
   }
   input:focus,
   textarea:focus,
@@ -73,12 +154,24 @@
 
 @layer utilities {
   .glass {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--glass-bg), var(--glass-alpha));
     @apply backdrop-blur-xl border border-white/10 shadow-[0_16px_35px_rgba(2,6,23,0.35)];
   }
   .glass-strong {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--glass-bg), var(--glass-strong-alpha));
     @apply backdrop-blur-2xl border border-white/15 shadow-[0_20px_45px_rgba(2,6,23,0.45)];
+  }
+  .light .glass {
+    @apply border-slate-300/70 shadow-[0_14px_28px_rgba(15,23,42,0.12)];
+  }
+  .light .glass-strong {
+    @apply border-slate-300/80 shadow-[0_18px_34px_rgba(15,23,42,0.14)];
+  }
+  .light .text-foreground {
+    color: hsl(var(--foreground));
+  }
+  .light .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
   }
   .glow-primary {
     box-shadow: 0 0 22px rgba(108, 99, 255, 0.35), 0 0 65px rgba(108, 99, 255, 0.12);
@@ -104,10 +197,10 @@
       radial-gradient(40rem 28rem at 80% 25%, rgba(0, 245, 212, 0.14), transparent 62%);
   }
   .heading-color {
-    color: #e2e8f0;
+    color: hsl(var(--heading));
   }
   .subtext-color {
-    color: #94a3b8;
+    color: hsl(var(--subtext));
   }
   .card-interactive {
     @apply transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.03] hover:border-[#6C63FF]/70 hover:shadow-[0_16px_35px_rgba(108,99,255,0.22)];

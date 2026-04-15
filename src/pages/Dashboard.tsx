@@ -12,12 +12,6 @@ const TOTAL_TOPICS = 10;
 const QUIZ_GOAL = 10;
 const SIMULATION_GOAL = 5;
 
-const badges = [
-  { name: "Beginner", icon: Star, earned: true, description: "Completed first module" },
-  { name: "Intermediate", icon: Zap, earned: true, description: "Finished 5 quizzes" },
-  { name: "Expert", icon: Award, earned: false, description: "Master all levels" },
-];
-
 const quickActions = [
   { label: "Continue Learning", path: "/learn", icon: BookOpen, gradient: "from-primary to-secondary" },
   { label: "Retry Quiz", path: "/quiz", icon: HelpCircle, gradient: "from-secondary to-accent" },
@@ -41,6 +35,12 @@ const Dashboard = () => {
     { label: "Games Played", value: `${progress.gamesPlayed}`, icon: Gamepad2, color: "text-neon-pink", progress: gamesProgress },
     { label: "Rank", value: `${rankValue}`, icon: Trophy, color: "text-secondary", progress: rankProgress },
   ];
+  const allBadges = [
+    { name: "Beginner", icon: Star, earned: progress.completedTopicIds.length >= 1, description: "Complete your first learning topic" },
+    { name: "Intermediate", icon: Zap, earned: progress.completedTopicIds.length >= 3, description: "Complete 3 learning topics" },
+    { name: "Expert", icon: Award, earned: progress.completedTopicIds.length >= TOTAL_TOPICS, description: "Complete all learning topics" },
+  ];
+  const earnedBadges = allBadges.filter((badge) => badge.earned);
 
   return (
     <Layout>
@@ -104,18 +104,30 @@ const Dashboard = () => {
               <Award className="w-5 h-5 text-accent" /> Badges
             </h2>
             <div className="glass rounded-2xl p-5 space-y-4">
-              {badges.map((b) => (
-                <div key={b.name} className={`flex items-center gap-3 ${b.earned ? "" : "opacity-40"}`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${b.earned ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"}`}>
-                    <b.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{b.name}</p>
-                    <p className="text-xs text-muted-foreground">{b.description}</p>
-                  </div>
-                  {b.earned && <span className="ml-auto text-xs text-accent font-medium">Earned ✓</span>}
+              {earnedBadges.length === 0 ? (
+                <div className="rounded-xl border border-border bg-muted/20 p-4">
+                  <p className="text-sm font-medium">None</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Start learning today. Every topic you complete unlocks new badges and shows your progress.
+                  </p>
                 </div>
-              ))}
+              ) : (
+                earnedBadges.map((b) => (
+                  <div key={b.name} className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent/20 text-accent">
+                      <b.icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{b.name}</p>
+                      <p className="text-xs text-muted-foreground">{b.description}</p>
+                    </div>
+                    <span className="ml-auto text-xs text-accent font-medium">Earned ✓</span>
+                  </div>
+                ))
+              )}
+              <p className="text-xs text-muted-foreground border-t border-border pt-3">
+                Keep going - small daily study wins build strong AI/ML skills.
+              </p>
             </div>
           </div>
         </div>

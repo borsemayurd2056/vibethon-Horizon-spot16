@@ -30,22 +30,11 @@ const Index = () => (
             <Sparkles className="w-4 h-4 text-accent" /> AI-Powered Learning Platform
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 heading-color">
-            Learn AI/ML the <span className="text-gradient">Fun Way</span> 🚀
+            Learn AI/ML the <span className="text-gradient">Fun Way</span>
           </h1>
           <p className="text-base md:text-xl subtext-color max-w-2xl mx-auto mb-10">
             Learn, Practice, and Play with Artificial Intelligence
           </p>
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-            <Link to="/learn" className="btn-primary px-8 py-3 glow-primary">
-              Start Learning
-            </Link>
-            <Link to="/game" className="btn-secondary px-8 py-3">
-              Play Game 🎮
-            </Link>
-            <Link to="/quiz" className="glass text-foreground px-8 py-3 rounded-xl font-semibold transition-all duration-300 ease-in-out hover:scale-105 hover:bg-white/10">
-              Take Quiz
-            </Link>
-          </div>
         </motion.div>
       </div>
     </section>
@@ -57,11 +46,16 @@ const Index = () => (
       </motion.h2>
       <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {features.map((f) => (
-          <motion.div key={f.title} variants={item} className="glass rounded-2xl p-6 md:p-8 card-interactive group">
-            <f.icon className={`w-10 h-10 ${f.color} mb-4 group-hover:animate-float`} />
-            <h3 className="font-display text-lg font-semibold mb-2 heading-color">{f.title}</h3>
-            <p className="subtext-color text-sm leading-relaxed">{f.description}</p>
-          </motion.div>
+          <Link key={f.title} to="/auth" className="block">
+            <motion.div
+              variants={item}
+              className="glass rounded-2xl p-6 md:p-8 card-interactive group cursor-pointer transition-all duration-300 ease-in-out hover:scale-[1.04]"
+            >
+              <f.icon className={`w-10 h-10 ${f.color} mb-4 group-hover:animate-float`} />
+              <h3 className="font-display text-lg font-semibold mb-2 heading-color">{f.title}</h3>
+              <p className="subtext-color text-sm leading-relaxed">{f.description}</p>
+            </motion.div>
+          </Link>
         ))}
       </motion.div>
     </section>
