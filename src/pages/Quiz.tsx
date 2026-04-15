@@ -10,26 +10,31 @@ const beginnerQuestions = [
     question: "What does AI stand for?",
     options: ["Automated Integration", "Artificial Intelligence", "Advanced Interface", "Analog Input"],
     correctAnswerIndex: 1,
+    explanation: "AI stands for Artificial Intelligence, which refers to systems that perform tasks requiring human-like intelligence.",
   },
   {
     question: "Which is a type of Machine Learning?",
     options: ["Supervised Learning", "Quantum Computing", "Blockchain", "Cloud Storage"],
     correctAnswerIndex: 0,
+    explanation: "Supervised learning is a core machine learning approach that uses labeled examples for training.",
   },
   {
     question: "What is training data?",
     options: ["Random noise", "Data used to teach a model", "Only test results", "Encrypted logs"],
     correctAnswerIndex: 1,
+    explanation: "Training data is the dataset used by a model to learn relationships between inputs and outputs.",
   },
   {
     question: "Which of these is an AI application?",
     options: ["Image recognition", "File compression only", "Word formatting", "Hardware assembly"],
     correctAnswerIndex: 0,
+    explanation: "Image recognition is a common AI use case where models identify objects or patterns in images.",
   },
   {
     question: "Which algorithm is commonly used for classification?",
     options: ["Bubble Sort", "Decision Tree", "Binary Search", "Quick Sort"],
     correctAnswerIndex: 1,
+    explanation: "Decision Tree is widely used for classification tasks because it learns clear decision rules.",
   },
 ];
 
@@ -38,26 +43,31 @@ const intermediateQuestions = [
     question: "In supervised learning, labels are:",
     options: ["Unknown", "Target outputs", "Features only", "Always text"],
     correctAnswerIndex: 1,
+    explanation: "In supervised learning, labels are the correct target values the model tries to predict.",
   },
   {
     question: "Which metric balances precision and recall?",
     options: ["Accuracy", "F1-score", "MSE", "AUC only"],
     correctAnswerIndex: 1,
+    explanation: "F1-score combines precision and recall into one balanced metric.",
   },
   {
     question: "Overfitting happens when a model:",
     options: ["Learns noise in training data", "Has too few parameters", "Uses no data", "Runs too fast"],
     correctAnswerIndex: 0,
+    explanation: "Overfitting occurs when the model memorizes training noise and performs poorly on new data.",
   },
   {
     question: "Which split is typically used for model tuning?",
     options: ["Training set", "Validation set", "Production set", "Archive set"],
     correctAnswerIndex: 1,
+    explanation: "Validation data is used for tuning hyperparameters without touching the final test set.",
   },
   {
     question: "Which algorithm is often used for clustering?",
     options: ["K-Means", "Linear Regression", "Naive Bayes", "Random Forest Regressor"],
     correctAnswerIndex: 0,
+    explanation: "K-Means groups similar samples into clusters based on distance from centroids.",
   },
 ];
 
@@ -66,26 +76,31 @@ const advancedQuestions = [
     question: "Backpropagation is primarily used to:",
     options: ["Compress datasets", "Update neural network weights", "Select labels manually", "Shuffle features"],
     correctAnswerIndex: 1,
+    explanation: "Backpropagation computes gradients and updates weights to reduce prediction error.",
   },
   {
     question: "A high bias model usually:",
     options: ["Underfits data", "Overfits data", "Needs more GPU memory only", "Has perfect generalization"],
     correctAnswerIndex: 0,
+    explanation: "High bias means the model is too simple and fails to capture key patterns, causing underfitting.",
   },
   {
     question: "Transformer models rely heavily on:",
     options: ["Convolution only", "Attention mechanisms", "Decision trees", "KNN distance voting"],
     correctAnswerIndex: 1,
+    explanation: "Transformers use attention to weigh important tokens and model long-range dependencies.",
   },
   {
     question: "Which helps detect class imbalance effects?",
     options: ["Confusion matrix", "Only mean error", "Only training loss", "File size"],
     correctAnswerIndex: 0,
+    explanation: "A confusion matrix reveals per-class performance and highlights imbalance-related errors.",
   },
   {
     question: "Regularization techniques like dropout are used to:",
     options: ["Increase overfitting", "Reduce overfitting", "Remove labels", "Avoid preprocessing"],
     correctAnswerIndex: 1,
+    explanation: "Dropout reduces overfitting by randomly deactivating neurons during training.",
   },
 ];
 
@@ -94,6 +109,7 @@ type QuizQuestion = {
   question: string;
   options: string[];
   correctAnswerIndex: number;
+  explanation: string;
 };
 
 const questionBank: Record<QuizLevel, QuizQuestion[]> = {
@@ -115,6 +131,7 @@ const Quiz = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>([]);
   const [finished, setFinished] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const questions = selectedLevel ? questionBank[selectedLevel] : [];
 
   const handleSelect = (idx: number) => {
@@ -133,26 +150,39 @@ const Quiz = () => {
     setFinished(false);
   };
 
+  const submitQuiz = () => {
+    if (!questions.length) return;
+    const hasUnanswered = selectedAnswers.some((answer) => answer === null);
+    if (hasUnanswered) return;
+
+    const finalScore = selectedAnswers.reduce(
+      (total, answer, idx) => total + (answer === questions[idx].correctAnswerIndex ? 1 : 0),
+      0,
+    );
+    const finalScorePercent = Math.round((finalScore / questions.length) * 100);
+    updateUserProgress((progress) => {
+      const quizAttempts = progress.quizAttempts + 1;
+      const bestQuizScore = Math.max(progress.bestQuizScore, finalScorePercent);
+      return {
+        ...progress,
+        quizAttempts,
+        bestQuizScore,
+        points: progress.completedTopicIds.length * 100 + quizAttempts * 50 + progress.gamesPlayed * 30 + progress.simulationsRun * 20,
+      };
+    });
+
+    setIsAnalyzing(true);
+    window.setTimeout(() => {
+      setIsAnalyzing(false);
+      setFinished(true);
+    }, 1600);
+  };
+
   const next = () => {
     if (!questions.length) return;
 
     if (currentQuestionIndex + 1 >= questions.length) {
-      const finalScore = selectedAnswers.reduce(
-        (total, answer, idx) => total + (answer === questions[idx].correctAnswerIndex ? 1 : 0),
-        0,
-      );
-      const finalScorePercent = Math.round((finalScore / questions.length) * 100);
-      updateUserProgress((progress) => {
-        const quizAttempts = progress.quizAttempts + 1;
-        const bestQuizScore = Math.max(progress.bestQuizScore, finalScorePercent);
-        return {
-          ...progress,
-          quizAttempts,
-          bestQuizScore,
-          points: progress.completedTopicIds.length * 100 + quizAttempts * 50 + progress.gamesPlayed * 30 + progress.simulationsRun * 20,
-        };
-      });
-      setFinished(true);
+      submitQuiz();
     } else {
       setCurrentQuestionIndex((prev) => prev + 1);
     }
@@ -163,12 +193,14 @@ const Quiz = () => {
     setCurrentQuestionIndex(0);
     setSelectedAnswers(Array.from({ length: questionBank[selectedLevel].length }, () => null));
     setFinished(false);
+    setIsAnalyzing(false);
   };
 
   const changeLevel = () => {
     setSelectedLevel(null);
     setQuizStarted(false);
     setFinished(false);
+    setIsAnalyzing(false);
     setCurrentQuestionIndex(0);
     setSelectedAnswers([]);
   };
@@ -181,8 +213,14 @@ const Quiz = () => {
   );
   const scorePercent = Math.round((score / questions.length) * 100);
   const adaptiveMessage = scorePercent === 100
-    ? "Excellent! You have mastered this level 🎉"
-    : "You should review concepts in the Learning Section 📘";
+    ? "Excellent! 🎉"
+    : scorePercent >= 50
+      ? "Good, keep improving"
+      : "Revise from Learning Section";
+  const getAnswerText = (questionIndex: number, answerIndex: number | null) => {
+    if (answerIndex === null) return "Not answered";
+    return questions[questionIndex]?.options[answerIndex] ?? "Invalid answer";
+  };
 
   return (
     <Layout>
@@ -219,8 +257,19 @@ const Quiz = () => {
                 ))}
               </div>
             </motion.div>
+          ) : isAnalyzing ? (
+            <motion.div
+              key="analyzing"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="glass rounded-2xl p-10 text-center max-w-xl w-full"
+            >
+              <div className="w-14 h-14 mx-auto mb-5 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+              <h2 className="font-display text-2xl font-bold mb-3">Analyzing your responses...</h2>
+              <p className="text-muted-foreground">Generating performance report...</p>
+            </motion.div>
           ) : finished ? (
-            <motion.div key="result" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="glass rounded-2xl p-10 text-center max-w-md w-full">
+            <motion.div key="result" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="glass rounded-2xl p-10 text-center max-w-3xl w-full">
               <CheckCircle2 className="w-16 h-16 text-accent mx-auto mb-4" />
               <h2 className="font-display text-2xl font-bold mb-2">Quiz Complete!</h2>
               <p className="text-muted-foreground mb-4">
@@ -228,6 +277,38 @@ const Quiz = () => {
               </p>
               <div className="text-5xl font-display font-bold text-gradient mb-3">{scorePercent}%</div>
               <p className="text-sm text-muted-foreground mb-6">{adaptiveMessage}</p>
+              <div className="mb-6 text-left">
+                <h3 className="font-display text-xl mb-4">Detailed Analysis</h3>
+              </div>
+              <div className="mb-6 text-left space-y-4">
+                {questions.map((question, idx) => (
+                  <motion.div
+                    key={question.question}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={`rounded-xl border p-4 ${
+                      selectedAnswers[idx] === question.correctAnswerIndex
+                        ? "border-emerald-400/40 bg-emerald-500/10"
+                        : "border-red-400/40 bg-red-500/10"
+                    }`}
+                  >
+                    <p className="font-medium mb-2 text-foreground">
+                      Question {idx + 1}: {question.question}
+                    </p>
+                    <p className={`text-sm ${selectedAnswers[idx] === question.correctAnswerIndex ? "text-emerald-300" : "text-red-300"}`}>
+                      <span className="font-semibold">Your Answer:</span> {getAnswerText(idx, selectedAnswers[idx] ?? null)}
+                    </p>
+                    <p className="text-sm text-emerald-300">
+                      <span className="font-semibold">Correct Answer:</span> {question.options[question.correctAnswerIndex]}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      <span className="font-semibold">Explanation:</span> {question.explanation}
+                    </p>
+                    <div className="mt-3 h-px bg-white/15" />
+                  </motion.div>
+                ))}
+              </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={() => navigate("/learn")}
@@ -239,7 +320,7 @@ const Quiz = () => {
                   onClick={tryAgain}
                   className="btn-primary px-5 py-3 inline-flex items-center justify-center gap-2"
                 >
-                  <RotateCcw className="w-4 h-4" /> Try Again
+                  <RotateCcw className="w-4 h-4" /> Retry Quiz
                 </button>
                 <button
                   onClick={changeLevel}
@@ -293,7 +374,7 @@ const Quiz = () => {
                   disabled={selectedForCurrent === null}
                   className="w-full btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  {currentQuestionIndex + 1 >= questions.length ? "See Results" : "Next Question →"}
+                  {currentQuestionIndex + 1 >= questions.length ? "Submit Quiz" : "Next Question →"}
                 </button>
               </motion.div>
             </>

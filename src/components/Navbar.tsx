@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, User, LogOut, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getStoredUser } from "@/lib/auth";
+import { getStoredUser, signOutFromSupabase } from "@/lib/auth";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -20,7 +20,8 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = getStoredUser();
-  const visibleNavItems = user ? navItems : navItems.filter((item) => item.path === "/");
+  const visibleNavItems = navItems;
+  const showLandingHeaderActions = location.pathname === "/";
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("aiml_theme");
@@ -36,8 +37,8 @@ const Navbar = () => {
     localStorage.setItem("aiml_theme", nextIsLight ? "light" : "dark");
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem("aiml_user");
+  const handleSignOut = async () => {
+    await signOutFromSupabase();
     navigate("/", { replace: true });
   };
 
@@ -49,48 +50,30 @@ const Navbar = () => {
           <span className="font-display text-lg font-bold text-gradient">AIML PlayLab</span>
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden lg:flex items-center gap-2">
-          {visibleNavItems.map((item) => (
+        {showLandingHeaderActions && (
+          <div className="hidden lg:flex items-center gap-2">
             <Link
-              key={item.path}
-              to={item.path}
-              className={`group relative px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ease-in-out ${
-                location.pathname === item.path
-                  ? "gradient-primary text-primary-foreground glow-primary"
-                  : "subtext-color hover:text-foreground hover:bg-white/5"
-              }`}
+              to="/"
+              className="group relative px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ease-in-out gradient-primary text-primary-foreground glow-primary"
             >
-              {item.label}
-              <span className={`absolute left-2 right-2 -bottom-0.5 h-[2px] origin-left rounded-full bg-gradient-to-r from-[#6C63FF] to-[#00F5D4] transition-transform duration-300 ${
-                location.pathname === item.path ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-              }`} />
+              Home
             </Link>
-          ))}
-          <button
-            onClick={toggleTheme}
-            className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
-            aria-label="Toggle theme"
-            title="Toggle theme"
-          >
-            {isLightTheme ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </button>
-          <Link
-            to={user ? "/dashboard" : "/auth"}
-            className="ml-2 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
-          >
-            <User className="w-4 h-4" />
-          </Link>
-          {user && (
             <button
-              onClick={handleSignOut}
-              className="ml-1 inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium subtext-color hover:text-foreground hover:bg-white/5 transition-all duration-300"
+              onClick={toggleTheme}
+              className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
+              aria-label="Toggle theme"
+              title="Toggle theme"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              Sign out
+              {isLightTheme ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
-          )}
-        </div>
+            <Link
+              to={user ? "/dashboard" : "/auth"}
+              className="ml-2 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
+            >
+              <User className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
 
         {/* Mobile toggle */}
         <button className="lg:hidden text-foreground p-2 rounded-lg hover:bg-white/5 transition-colors" onClick={() => setOpen(!open)}>
@@ -140,7 +123,7 @@ const Navbar = () => {
                 <button
                   onClick={() => {
                     setOpen(false);
-                    handleSignOut();
+                    void handleSignOut();
                   }}
                   className="px-4 py-3 rounded-xl text-sm font-medium subtext-color hover:text-foreground hover:bg-white/5 flex items-center gap-2 text-left transition-all duration-300"
                 >

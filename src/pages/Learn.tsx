@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Cpu, GitBranch, Layers, ChevronRight, CheckCircle2, Circle, Network, Database, BarChart3, Bot, Workflow, Eye } from "lucide-react";
+import { Brain, Cpu, GitBranch, Layers, CheckCircle2, Circle, Network, Database, BarChart3, Bot, Workflow, Eye } from "lucide-react";
 import Layout from "@/components/Layout";
 import { getUserProgress, updateUserProgress } from "@/lib/progress";
+import LessonCard from "@/components/LessonCard";
+import Modal from "@/components/Modal";
 
 type Topic = {
   id: string;
@@ -34,6 +36,7 @@ const Learn = () => {
   const [activeLevel, setActiveLevel] = useState<typeof levels[number]>("beginner");
   const [active, setActive] = useState(topics[0].id);
   const [completed, setCompleted] = useState<Set<string>>(initialCompleted);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
 
   const filtered = topics.filter((t) => t.level === activeLevel);
   const current = filtered.find((t) => t.id === active) || filtered[0];
@@ -88,17 +91,17 @@ const Learn = () => {
           <div className="md:w-72 flex-shrink-0">
             <div className="glass rounded-2xl p-4 space-y-2">
               {filtered.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => setActive(t.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-left ${
-                    active === t.id ? "gradient-primary text-primary-foreground glow-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {completed.has(t.id) ? <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" /> : <t.icon className="w-5 h-5 flex-shrink-0" />}
-                  <span className="truncate">{t.title}</span>
-                  {active === t.id && <ChevronRight className="w-4 h-4 ml-auto flex-shrink-0" />}
-                </button>
+                  <LessonCard
+                    key={t.id}
+                    title={t.title}
+                    icon={t.icon}
+                    isActive={active === t.id}
+                    isCompleted={completed.has(t.id)}
+                    onClick={() => {
+                      setActive(t.id);
+                      setSelectedTopic(t);
+                    }}
+                  />
               ))}
             </div>
           </div>
@@ -137,6 +140,47 @@ const Learn = () => {
             </AnimatePresence>
           </div>
         </div>
+
+        <Modal
+          isOpen={Boolean(selectedTopic)}
+          onClose={() => setSelectedTopic(null)}
+          title={selectedTopic?.title ?? "Lesson"}
+          footer={selectedTopic && (
+            <>
+              <button
+                onClick={() => {
+                  setActive(selectedTopic.id);
+                  setSelectedTopic(null);
+                }}
+                className="rounded-xl gradient-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(56,189,248,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                Start Learning
+              </button>
+              <button
+                onClick={() => {
+                  toggleComplete(selectedTopic.id);
+                }}
+                className="rounded-xl border border-primary/30 bg-primary/10 px-5 py-2.5 text-sm font-semibold text-primary transition-all hover:bg-primary/20 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                Mark as Completed
+              </button>
+            </>
+          )}
+        >
+          <p className="mb-5 leading-relaxed text-muted-foreground">
+            {selectedTopic?.content}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {selectedTopic?.highlights.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </Modal>
       </div>
     </Layout>
   );

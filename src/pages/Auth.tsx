@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { isAuthenticated } from "@/lib/auth";
+import { isAuthenticated, signInWithSupabase, signUpWithSupabase } from "@/lib/auth";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,19 +19,24 @@ const Auth = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || (!isLogin && !name.trim())) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      localStorage.setItem(
-        "aiml_user",
-        JSON.stringify({ email, name: isLogin ? email.split("@")[0] : name.trim() }),
-      );
+    try {
+      if (isLogin) {
+        await signInWithSupabase(email, password);
+      } else {
+        await signUpWithSupabase(name, email, password);
+      }
       toast({ title: isLogin ? "Welcome back!" : "Account created!", description: "Redirecting to dashboard..." });
       navigate("/dashboard");
-    }, 1200);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Authentication failed";
+      toast({ title: "Authentication error", description: message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

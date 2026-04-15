@@ -10,6 +10,8 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 const Index = lazy(() => import("./pages/Index"));
 const Learn = lazy(() => import("./pages/Learn"));
 const Game = lazy(() => import("./pages/Game"));
+const ScenarioGame = lazy(() => import("./pages/ScenarioGame"));
+const KnnGame = lazy(() => import("./pages/KnnGame"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -44,6 +46,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
             <Route path="/game" element={<ProtectedRoute><Game /></ProtectedRoute>} />
+            <Route path="/game/scenario" element={<ProtectedRoute><ScenarioGame /></ProtectedRoute>} />
+            <Route path="/game/knn" element={<ProtectedRoute><KnnGame /></ProtectedRoute>} />
             <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

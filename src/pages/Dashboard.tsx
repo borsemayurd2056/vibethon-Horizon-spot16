@@ -47,9 +47,11 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
-            Welcome back, <span className="text-gradient">{user.name}</span> 👋
+            Welcome <span className="text-gradient">{user.name}</span> 👋
           </h1>
-          <p className="text-muted-foreground">Track your progress and continue your AI/ML journey.</p>
+          <p className="text-muted-foreground">
+            AIML PlayLab helps you learn AI concepts with interactive lessons, quizzes, and games.
+          </p>
         </motion.div>
 
         {/* Stats */}
