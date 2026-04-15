@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 221 39% 7%;
+    --foreground: 218 27% 91%;
+
+    --card: 222 33% 10%;
+    --card-foreground: 218 27% 91%;
+
+    --popover: 222 33% 10%;
+    --popover-foreground: 218 27% 91%;
+
+    --primary: 244 100% 69%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 223 33% 16%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 173 92% 48%;
+    --accent-foreground: 230 25% 7%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 223 27% 23%;
+    --input: 222 30% 14%;
+    --ring: 244 100% 69%;
+
+    --radius: 0.75rem;
+
+    --neon-pink: 38 92% 52%;
+    --neon-cyan: 173 92% 48%;
+    --neon-purple: 244 100% 69%;
+
+    --sidebar-background: 223 45% 8%;
+    --sidebar-foreground: 217 19% 80%;
+    --sidebar-primary: 244 100% 69%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 223 33% 14%;
+    --sidebar-accent-foreground: 218 27% 91%;
+    --sidebar-border: 223 27% 23%;
+    --sidebar-ring: 244 100% 69%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply text-foreground font-body antialiased;
+    background:
+      radial-gradient(60rem 60rem at 15% -10%, rgba(108, 99, 255, 0.2), transparent 55%),
+      radial-gradient(55rem 55rem at 85% 0%, rgba(0, 245, 212, 0.14), transparent 52%),
+      linear-gradient(135deg, #0b0f1a 0%, #0f172a 48%, #020617 100%);
+    min-height: 100vh;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.25), 0 0 16px rgba(108, 99, 255, 0.2);
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    @apply backdrop-blur-xl border border-white/10 shadow-[0_16px_35px_rgba(2,6,23,0.35)];
+  }
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.08);
+    @apply backdrop-blur-2xl border border-white/15 shadow-[0_20px_45px_rgba(2,6,23,0.45)];
+  }
+  .glow-primary {
+    box-shadow: 0 0 22px rgba(108, 99, 255, 0.35), 0 0 65px rgba(108, 99, 255, 0.12);
+  }
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.28), 0 0 55px rgba(0, 245, 212, 0.1);
+  }
+  .glow-input {
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.25), 0 0 16px rgba(108, 99, 255, 0.18);
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#6C63FF] to-[#00F5D4];
+  }
+  .gradient-primary {
+    @apply bg-gradient-to-r from-[#6C63FF] to-[#00F5D4];
+  }
+  .gradient-hover {
+    @apply bg-gradient-to-r from-[#7F7FFF] to-[#00F5D4];
+  }
+  .gradient-hero {
+    background:
+      radial-gradient(45rem 30rem at 20% 15%, rgba(108, 99, 255, 0.22), transparent 62%),
+      radial-gradient(40rem 28rem at 80% 25%, rgba(0, 245, 212, 0.14), transparent 62%);
+  }
+  .heading-color {
+    color: #e2e8f0;
+  }
+  .subtext-color {
+    color: #94a3b8;
+  }
+  .card-interactive {
+    @apply transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.03] hover:border-[#6C63FF]/70 hover:shadow-[0_16px_35px_rgba(108,99,255,0.22)];
+  }
+  .btn-primary {
+    @apply gradient-primary text-primary-foreground rounded-xl font-semibold transition-all duration-300 ease-in-out hover:scale-105 hover:gradient-hover hover:glow-primary;
+  }
+  .btn-secondary {
+    @apply rounded-xl border border-[#6C63FF]/50 text-[#E2E8F0] transition-all duration-300 ease-in-out hover:scale-105 hover:gradient-primary hover:text-primary-foreground hover:border-transparent;
+  }
+  .page-fade {
+    animation: page-fade 0.45s ease-in-out;
+  }
+}
+
+@keyframes page-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
