@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HelpCircle, CheckCircle2, RotateCcw, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { updateUserProgress } from "@/lib/progress";
+import { logUserActivity, updateUserProgress } from "@/lib/progress";
 
 const beginnerQuestions = [
   {
@@ -170,6 +170,7 @@ const Quiz = () => {
         points: progress.completedTopicIds.length * 100 + quizAttempts * 50 + progress.gamesPlayed * 30 + progress.simulationsRun * 20,
       };
     });
+    logUserActivity("quiz", `Completed ${selectedLevel ?? "quiz"} level with score ${finalScore}/${questions.length}`);
 
     setIsAnalyzing(true);
     window.setTimeout(() => {

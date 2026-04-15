@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, CheckCircle2, XCircle, Trophy, Sigma } from "lucide-react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { updateUserProgress } from "@/lib/progress";
+import { logUserActivity, updateUserProgress } from "@/lib/progress";
 
 type KnnScenario = {
   id: string;
@@ -114,6 +114,7 @@ const KnnGame = () => {
         points: progress.completedTopicIds.length * 100 + progress.quizAttempts * 50 + gamesPlayed * 30 + progress.simulationsRun * 20,
       };
     });
+    logUserActivity("game", `Completed KNN Classifier Game with score ${score}/${knnScenarios.length}`);
     setIsFinished(true);
   };
 

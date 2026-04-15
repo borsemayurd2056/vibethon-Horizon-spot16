@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Cpu, GitBranch, Layers, CheckCircle2, Circle, Network, Database, BarChart3, Bot, Workflow, Eye } from "lucide-react";
 import Layout from "@/components/Layout";
-import { getUserProgress, updateUserProgress } from "@/lib/progress";
+import { getUserProgress, logUserActivity, updateUserProgress } from "@/lib/progress";
 import LessonCard from "@/components/LessonCard";
 import Modal from "@/components/Modal";
 
@@ -55,6 +55,7 @@ const Learn = () => {
           points: completedTopicIds.length * 100 + progress.quizAttempts * 50 + progress.gamesPlayed * 30 + progress.simulationsRun * 20,
         };
       });
+      logUserActivity("learn", `${next.has(id) ? "Completed" : "Unmarked"} topic: ${topics.find((topic) => topic.id === id)?.title ?? id}`);
       return next;
     });
   };

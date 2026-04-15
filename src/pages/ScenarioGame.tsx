@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BrainCircuit, CheckCircle2, XCircle, Trophy, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { updateUserProgress } from "@/lib/progress";
+import { logUserActivity, updateUserProgress } from "@/lib/progress";
 
 type Scenario = {
   id: string;
@@ -82,6 +82,7 @@ const ScenarioGame = () => {
         points: progress.completedTopicIds.length * 100 + progress.quizAttempts * 50 + gamesPlayed * 30 + progress.simulationsRun * 20,
       };
     });
+    logUserActivity("game", `Completed AI Scenario Game with score ${score}/${scenarios.length}`);
     setIsFinished(true);
   };
 

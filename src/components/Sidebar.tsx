@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, LayoutDashboard, BookOpen, Gamepad2, HelpCircle, Cpu, Trophy, Moon, Sun, User, LogOut } from "lucide-react";
-import { getStoredUser, signOutFromSupabase } from "@/lib/auth";
+import { getStoredUser, isGuestMode, signOutFromSupabase } from "@/lib/auth";
 import { useEffect, useState } from "react";
 
 const navItems = [
@@ -17,8 +17,11 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = getStoredUser();
+  const guestMode = isGuestMode();
   const [isLightTheme, setIsLightTheme] = useState(false);
-  const visibleNavItems = user ? navItems : navItems.filter((item) => item.path === "/");
+  const visibleNavItems = user
+    ? navItems
+    : navItems.filter((item) => item.path !== "/dashboard" && item.path !== "/leaderboard");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("aiml_theme");
@@ -36,7 +39,7 @@ const Sidebar = () => {
 
   const handleSignOut = async () => {
     await signOutFromSupabase();
-    navigate("/", { replace: true });
+    navigate("/auth", { replace: true });
   };
 
   return (
@@ -81,7 +84,7 @@ const Sidebar = () => {
             className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground transition-all hover:bg-white/5 hover:text-foreground"
           >
             <User className="h-4 w-4" />
-            {user ? "Profile" : "Login / Register"}
+            {user ? user.name : guestMode ? "Login" : "Login / Register"}
           </Link>
           {user && (
             <button

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, User, LogOut, Moon, Sun } from "lucide-react";
+import { Menu, X, User, LogOut, Moon, Sun, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getStoredUser, signOutFromSupabase } from "@/lib/auth";
+import { getStoredUser, isGuestMode, signOutFromSupabase } from "@/lib/auth";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -20,7 +20,10 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = getStoredUser();
-  const visibleNavItems = navItems;
+  const guestMode = isGuestMode();
+  const visibleNavItems = user
+    ? navItems
+    : navItems.filter((item) => item.path !== "/dashboard" && item.path !== "/leaderboard");
   const showLandingHeaderActions = location.pathname === "/";
 
   useEffect(() => {
@@ -39,7 +42,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOutFromSupabase();
-    navigate("/", { replace: true });
+    navigate("/auth", { replace: true });
   };
 
   return (
@@ -66,12 +69,26 @@ const Navbar = () => {
             >
               {isLightTheme ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
-            <Link
-              to={user ? "/dashboard" : "/auth"}
-              className="ml-2 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center subtext-color hover:text-foreground hover:bg-primary/20 transition-all duration-300"
-            >
-              <User className="w-4 h-4" />
-            </Link>
+            {user ? (
+              <>
+                <span className="text-xs text-muted-foreground max-w-[140px] truncate ml-2">{user.name}</span>
+                <button
+                  onClick={() => void handleSignOut()}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium subtext-color hover:text-foreground hover:bg-white/5 transition-all duration-300"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/auth"
+                className="ml-2 inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium subtext-color hover:text-foreground hover:bg-white/5 transition-all duration-300"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                Login
+              </Link>
+            )}
           </div>
         )}
 
@@ -117,7 +134,7 @@ const Navbar = () => {
                 onClick={() => setOpen(false)}
                 className="px-4 py-3 rounded-xl text-sm font-medium subtext-color hover:text-foreground hover:bg-white/5 flex items-center gap-2 transition-all duration-300"
               >
-                <User className="w-4 h-4" /> {user ? "Profile" : "Login / Register"}
+                <User className="w-4 h-4" /> {user ? `Profile (${user.name})` : guestMode ? "Login" : "Login / Register"}
               </Link>
               {user && (
                 <button

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   BookOpen, Gamepad2, HelpCircle, Trophy, TrendingUp, Award,
-  ArrowRight, Star, Zap, Target
+  ArrowRight, Star, Zap, Target, History
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { getStoredUser } from "@/lib/auth";
@@ -44,15 +44,28 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+      <div className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-20"
+          style={{
+            backgroundImage: "url('/home-bg.png')",
+            backgroundPosition: "center top",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            filter: "blur(2px)",
+            transform: "scale(1.08)",
+          }}
+        />
+        <div className="container mx-auto px-4 py-12 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
             Welcome <span className="text-gradient">{user.name}</span> 👋
           </h1>
           <p className="text-muted-foreground">
             AIML PlayLab helps you learn AI concepts with interactive lessons, quizzes, and games.
           </p>
-        </motion.div>
+          {user.email && <p className="text-sm text-muted-foreground/90 mt-1">{user.email}</p>}
+          </motion.div>
 
         {/* Stats */}
         <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -164,6 +177,25 @@ const Dashboard = () => {
             </div>
           </div>
         </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8">
+          <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+            <History className="w-5 h-5 text-primary" /> Recent Activity
+          </h2>
+          <div className="glass rounded-2xl p-6 space-y-3">
+            {progress.activityHistory.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No activity yet. Start learning, playing, or taking a quiz to build your history.</p>
+            ) : (
+              progress.activityHistory.slice(0, 8).map((entry) => (
+                <div key={entry.id} className="rounded-xl border border-border/60 bg-background/40 px-4 py-3">
+                  <p className="text-sm font-medium capitalize">{entry.type}</p>
+                  <p className="text-sm text-muted-foreground">{entry.message}</p>
+                  <p className="text-xs text-muted-foreground/80 mt-1">{new Date(entry.createdAt).toLocaleString()}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </motion.div>
+        </div>
       </div>
     </Layout>
   );

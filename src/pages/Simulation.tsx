@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScanSearch, ShieldCheck, ShieldAlert, Sparkles, Send } from "lucide-react";
 import Layout from "@/components/Layout";
-import { updateUserProgress } from "@/lib/progress";
+import { logUserActivity, updateUserProgress } from "@/lib/progress";
 
 const spamKeywords = ["win", "free", "click", "prize", "offer", "buy now", "limited", "congratulations", "winner", "claim", "cash", "money", "urgent", "act now", "subscribe", "discount"];
 
@@ -29,6 +29,7 @@ const Simulation = () => {
           points: progress.completedTopicIds.length * 100 + progress.quizAttempts * 50 + progress.gamesPlayed * 30 + simulationsRun * 20,
         };
       });
+      logUserActivity("simulation", `Ran spam detection simulation (${isSpam ? "Spam" : "Not Spam"}, ${Math.round(confidence)}% confidence)`);
       setAnalyzing(false);
     }, 1800);
   };
